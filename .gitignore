@@ -1,0 +1,32 @@
+# Ignorar directorios y archivos generados por NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# Ignorar archivos de compilación
+*.class
+*.war
+*.jar
+
+# Ignorar archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignorar configuraciones específicas del IDE
+*.iml
+.idea/
+*.log
+
+# Ignorar carpetas temporales del sistema operativo
+tmp/
+temp/
+
+# Ignorar archivos de Maven si se usa (opcional)
+target/
+
+# Ignorar configuraciones del sistema de control de versiones de NetBeans
+.netbeans/

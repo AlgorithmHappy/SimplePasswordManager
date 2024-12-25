@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="960.0" prefWidth="300.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.passwordmanager.controllers.DialogUpdateWindowController">
+    <children>
+      <Label fx:id="lblUpdateAccount" text="Modificanedo la cuenta con id: " />
+        <Label text="Cuenta:" />
+        <TextField fx:id="txtFieldCuenta" promptText="Ingrese su cuenta" />
+        <Label layoutX="140.0" layoutY="30.0" text="Nombre de usuario:" />
+        <TextField fx:id="txtFieldUserName" layoutX="30.0" layoutY="67.0" promptText="Ingrese su nombre de usuario" />
+        <Label layoutX="140.0" layoutY="30.0" text="Contraseña:" />
+        <HBox fx:id="hBoxPassword" alignment="CENTER" spacing="5">
+            <!-- Campo de texto NO visible -->
+            <PasswordField fx:id="passFieldPassword" minHeight="0.0" minWidth="0.0" prefHeight="25.0" prefWidth="222.0" promptText="Ingrese su contraseña" visible="true" />
+            <!-- Campo de texto visible -->
+            <TextField fx:id="txtFieldPasswordVisible" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0" promptText="Ingrese su contraseña" visible="false" />
+            <!-- Botón para mostrar/ocultar -->
+            <Button fx:id="btnEyePassword" onAction="#passwordToggleVisibility" text="👁" />
+        </HBox>
+        <Label layoutX="140.0" layoutY="241.0" text="Token:" />
+        <HBox fx:id="hBoxToken" alignment="CENTER" spacing="5">
+            <!-- Campo de texto NO visible -->
+            <PasswordField fx:id="passFieldToken" minHeight="0.0" minWidth="0.0" prefHeight="25.0" prefWidth="222.0" promptText="Ingrese su token o clave secreta" visible="true" />
+            <!-- Campo de texto visible -->
+            <TextField fx:id="txtFieldTokenVisible" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0" promptText="Ingrese su token o clave secreta" visible="false" />
+            <!-- Botón para mostrar/ocultar -->
+            <Button fx:id="btnEyeToken" onAction="#tokenToggleVisibility" text="👁" />
+        </HBox>
+        <Label layoutX="140.0" layoutY="323.0" text="Correo registrado:" />
+        <TextField fx:id="txtFieldEmail" layoutX="30.0" layoutY="361.0" promptText="Ingrese su correo electronico" />
+        <Label layoutX="140.0" layoutY="406.0" text="Celular registrado:" />
+        <TextField fx:id="txtFieldPhone" layoutX="30.0" layoutY="443.0" promptText="Ingrese su numero de celular" />
+        <Label layoutX="140.0" layoutY="489.0" text="URL:" />
+        <TextField fx:id="txtFieldUrl" layoutX="30.0" layoutY="526.0" promptText="Ingrese la pagina WEB de la cuenta" />
+        <Label layoutX="140.0" layoutY="571.0" text="Comentarios:" />
+        <TextArea fx:id="txtAreaComments" prefHeight="250.0" prefWidth="260.0" promptText="Ingrese comentarios adicionales" />
+      <Label fx:id="lblShowError" text="..." textFill="RED" />
+        <Button fx:id="btnInsertAccount" onAction="#updateAccount" prefWidth="150.0" text="Actualizar cuenta" />
+    </children>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</VBox>
