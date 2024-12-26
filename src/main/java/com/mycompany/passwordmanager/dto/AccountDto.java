@@ -4,6 +4,7 @@
  */
 package com.mycompany.passwordmanager.dto;
 
+import com.mycompany.passwordmanager.entities.Accounts;
 import com.mycompany.passwordmanager.vo.TableAccountVo;
 import java.util.Objects;
 
@@ -76,6 +77,18 @@ public class AccountDto {
         this.url = tableAccountVo.getUrl();
         this.comments = tableAccountVo.getComments();
 
+    }
+
+    public AccountDto(Accounts accounts){
+        this.id = accounts.getId();
+        this.account = accounts.getAccount();
+        this.userName = accounts.getUser_name();
+        this.password = accounts.getPassword();
+        this.token = accounts.getToken();
+        this.email = accounts.getEmail();
+        this.phone = accounts.getPhone();
+        this.url = accounts.getUrl();
+        this.comments = accounts.getComments();
     }
 
     public Integer getId() {
@@ -152,6 +165,10 @@ public class AccountDto {
     
     public TableAccountVo getTableAccountVo(){
         return new TableAccountVo(id, account, userName, password, token, email, phone, url, comments);
+    }
+
+    public Accounts getEntityAcount(){
+        return new Accounts(id, account, userName, password, token, email, phone, url, comments);
     }
 
     @Override

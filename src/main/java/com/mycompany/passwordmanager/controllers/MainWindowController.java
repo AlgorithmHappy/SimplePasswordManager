@@ -5,6 +5,8 @@
 package com.mycompany.passwordmanager.controllers;
 
 import com.mycompany.passwordmanager.dto.AccountDto;
+import com.mycompany.passwordmanager.services.CrudServiceImplements;
+import com.mycompany.passwordmanager.services.CrudServiceInterface;
 import com.mycompany.passwordmanager.utils.constants.Constants;
 import com.mycompany.passwordmanager.vo.TableAccountVo;
 import java.io.IOException;
@@ -28,6 +30,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
@@ -46,6 +49,7 @@ public class MainWindowController {
     private List<AccountDto> listAccountDto;
     
     private ObservableList<TableAccountVo> obsListAccounts;
+    private ObservableList<TableAccountVo> obsListTblAccountsVoFiltered;
     
     @FXML
     private TableView<TableAccountVo> tblViewAccounts;
@@ -82,16 +86,27 @@ public class MainWindowController {
     
     @FXML
     private Label lblIdAccount;
+    
+    @FXML
+    private TextField txtFieldKeyWordsFilters;
 
     private AccountDto selectedAccount;
 
+    private CrudServiceInterface crudService;
+
     public MainWindowController() {
-        this.listAccountDto = new ArrayList<>();
+        crudService = new CrudServiceImplements();
+        this.listAccountDto = crudService.getAllAccounts();
+        if(this.listAccountDto == null)
+            this.listAccountDto = new ArrayList<>();
     }
     
     @FXML
     public void initialize() {
         obsListAccounts = FXCollections.observableArrayList();
+        obsListTblAccountsVoFiltered = FXCollections.observableArrayList();
+        for(AccountDto it : this.listAccountDto)
+            obsListAccounts.add(it.getTableAccountVo() );
         
         tblColId.setCellValueFactory(new PropertyValueFactory("id"));
         tblColAccount.setCellValueFactory(new PropertyValueFactory("account"));
@@ -147,6 +162,7 @@ public class MainWindowController {
         if(dialogWindowInsertController.getAccountDto().getId() != 0){
             obsListAccounts.add(dialogWindowInsertController.getTableAccountVo() );
             listAccountDto.add(dialogWindowInsertController.getAccountDto() );
+            crudService.insertAccount(dialogWindowInsertController.getAccountDto() );
         }
         tblViewAccounts.refresh();
         
@@ -207,7 +223,15 @@ public class MainWindowController {
                     it.setUserName(dialogWindowUpdateController.getAccountDto().getUserName() );
                 }
             });
+
+            crudService.updateAccount(dialogWindowUpdateController.getAccountDto() );
         }
+        
+        if(obsListTblAccountsVoFiltered != null && !obsListTblAccountsVoFiltered.isEmpty() ){
+            txtFieldKeyWordsFiltersOnKeyReleased();
+            tblViewAccounts.setPlaceholder(new Label("No se encuentra ninguna cuenta con el criterio de busqueda"));
+        }
+        
         tblViewAccounts.refresh();
     }
     
@@ -224,6 +248,9 @@ public class MainWindowController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 obsListAccounts.removeIf(it -> it.equals(selectedAccount.getTableAccountVo() ) );
                 listAccountDto.removeIf(it -> it.equals(selectedAccount) );
+                if(obsListTblAccountsVoFiltered != null && obsListTblAccountsVoFiltered.isEmpty() ){
+                    tblViewAccounts.setPlaceholder(new Label("No se encuentra ninguna cuenta con el criterio de busqueda"));
+                }
             }
         }
         tblViewAccounts.refresh();
@@ -237,5 +264,24 @@ public class MainWindowController {
             selectedAccount = listAccountDto.get(listAccountDto.indexOf(selectedAccount) ); // Se hace esto para setear el password y token en claro como lo tiene la lista normal no la lista observable de la tabla que tiene asteriscos
             lblIdAccount.setText(Integer.toString(selectedAccount.getId() ) );
         }
+    }
+    
+    @FXML
+    private void txtFieldKeyWordsFiltersOnKeyReleased(){
+        if(txtFieldKeyWordsFilters.getText() != null && !txtFieldKeyWordsFilters.getText().isBlank() ){
+            String regexFilter = ".*".concat(
+                txtFieldKeyWordsFilters
+                    .getText()
+                    .trim()
+                    .replaceAll("\\s+", " ")
+                    .replace(" ", ".*")
+                    .concat(".*")
+            );
+            obsListTblAccountsVoFiltered = obsListAccounts.filtered(it -> it.getAccount().matches(regexFilter) );
+            tblViewAccounts.setItems(obsListTblAccountsVoFiltered);
+        } else {
+            tblViewAccounts.setItems(obsListAccounts);
+        }
+        tblViewAccounts.refresh();
     }
 }

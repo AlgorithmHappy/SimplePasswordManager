@@ -30,3 +30,5 @@ target/
 
 # Ignorar configuraciones del sistema de control de versiones de NetBeans
 .netbeans/
+.vscode/
+*.db
