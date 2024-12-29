@@ -8,13 +8,16 @@ import com.mycompany.passwordmanager.dto.AccountDto;
 import com.mycompany.passwordmanager.utils.constants.Constants;
 import com.mycompany.passwordmanager.vo.TableAccountVo;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,7 +33,7 @@ import javafx.stage.Stage;
  *
  * @author Luis Gerardo Marquez
  */
-public class DialogWindowController {
+public class DialogWindowController implements Initializable {
     
     @FXML
     private TextField txtFieldCuenta;
@@ -115,8 +118,8 @@ public class DialogWindowController {
         obsListAccounts = FXCollections.observableArrayList();
     }
     
-    @FXML
-    void initialize(){
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1){
                
         // Vincular el texto del Label a un binding compuesto
         lblShowError.textProperty().bind(

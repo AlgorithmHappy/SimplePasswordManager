@@ -9,6 +9,8 @@ import com.mycompany.passwordmanager.services.CrudServiceImplements;
 import com.mycompany.passwordmanager.services.CrudServiceInterface;
 import com.mycompany.passwordmanager.utils.constants.Constants;
 import com.mycompany.passwordmanager.vo.TableAccountVo;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,23 +18,31 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,7 +50,7 @@ import javafx.stage.Stage;
  *
  * @author Luis Gerardo Marquez
  */
-public class MainWindowController {
+public class MainWindowController implements Initializable {
     
     private DialogWindowController dialogWindowInsertController;
     
@@ -50,6 +60,21 @@ public class MainWindowController {
     
     private ObservableList<TableAccountVo> obsListAccounts;
     private ObservableList<TableAccountVo> obsListTblAccountsVoFiltered;
+
+    @FXML
+    private AnchorPane anchorPane;
+
+    @FXML
+    private MenuBar menuBar;
+
+    @FXML
+    private Menu menu;
+
+    @FXML
+    private MenuItem menuItemOpen;
+
+    @FXML
+    private MenuItem menuItemClose;
     
     @FXML
     private TableView<TableAccountVo> tblViewAccounts;
@@ -83,6 +108,9 @@ public class MainWindowController {
     
     @FXML
     private Button btnIdUpdateAccount;
+
+    @FXML
+    private Button btnIdDeleteAccount;
     
     @FXML
     private Label lblIdAccount;
@@ -101,8 +129,8 @@ public class MainWindowController {
             this.listAccountDto = new ArrayList<>();
     }
     
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
         obsListAccounts = FXCollections.observableArrayList();
         obsListTblAccountsVoFiltered = FXCollections.observableArrayList();
         for(AccountDto it : this.listAccountDto)
@@ -117,7 +145,6 @@ public class MainWindowController {
         tblColPhone.setCellValueFactory(new PropertyValueFactory("phone"));
         tblColUrl.setCellValueFactory(new PropertyValueFactory("url"));
         tblColComments.setCellValueFactory(new PropertyValueFactory("comments"));
-        
         tblViewAccounts.setItems(obsListAccounts);
         
         // Vincular la propiedad "disable" del botón a la condición de el label de seleccion
@@ -127,6 +154,47 @@ public class MainWindowController {
                 lblIdAccount.textProperty()
             )
         );        
+
+        btnIdDeleteAccount.disableProperty().bind(
+            Bindings.createBooleanBinding(
+                () -> lblIdAccount.getText().equals("0"),
+                lblIdAccount.textProperty()
+            )
+        );
+
+        menuBar = new MenuBar();
+        menu = new Menu("Archivo");
+        menuItemClose = new MenuItem("Cerrar");
+        menuItemOpen = new MenuItem("Abrir");
+        menu.getItems().add(menuItemClose);
+        menu.getItems().add(menuItemOpen);
+        menuBar.getMenus().add(menu);
+        // Establecer el MenuBar en la parte superior del AnchorPane
+        AnchorPane.setTopAnchor(menuBar, 0.0);
+        AnchorPane.setLeftAnchor(menuBar, 0.0);
+        AnchorPane.setRightAnchor(menuBar, 0.0);
+        anchorPane.getChildren().addAll(menuBar);
+        menuItemOpen.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Seleccionar archivo");
+
+            // Configurar filtros de extensiones
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Cuentas", "*.accounts")
+            );
+
+            // Mostrar el explorador de archivos
+            File archivoSeleccionado = fileChooser.showOpenDialog(new Stage() );
+                
+            if (archivoSeleccionado != null) {
+                System.out.println("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath());
+            } else {
+                System.out.println("No se seleccionó ningún archivo.");
+            }
+        });
+        menuItemClose.setOnAction(event -> {
+            System.exit(0);
+        });
     }
     
     @FXML
@@ -251,6 +319,7 @@ public class MainWindowController {
                 if(obsListTblAccountsVoFiltered != null && obsListTblAccountsVoFiltered.isEmpty() ){
                     tblViewAccounts.setPlaceholder(new Label("No se encuentra ninguna cuenta con el criterio de busqueda"));
                 }
+                crudService.deletetAccount(selectedAccount);
             }
         }
         tblViewAccounts.refresh();
@@ -269,19 +338,44 @@ public class MainWindowController {
     @FXML
     private void txtFieldKeyWordsFiltersOnKeyReleased(){
         if(txtFieldKeyWordsFilters.getText() != null && !txtFieldKeyWordsFilters.getText().isBlank() ){
-            String regexFilter = ".*".concat(
-                txtFieldKeyWordsFilters
-                    .getText()
-                    .trim()
-                    .replaceAll("\\s+", " ")
-                    .replace(" ", ".*")
-                    .concat(".*")
-            );
+            String regexFilter = txtFieldKeyWordsFilters
+                .getText()
+                .trim()
+                .replaceAll("\\s+", " ")
+                .replace(" ", ".*")
+                .concat(".*");
+
             obsListTblAccountsVoFiltered = obsListAccounts.filtered(it -> it.getAccount().matches(regexFilter) );
             tblViewAccounts.setItems(obsListTblAccountsVoFiltered);
         } else {
             tblViewAccounts.setItems(obsListAccounts);
         }
         tblViewAccounts.refresh();
+    }
+
+    /*@FXML
+    private void menuItemOpenOnAction(ActionEvent event){
+        // Crear un FileChooser
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar archivo");
+
+        // Configurar filtros de extensiones
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Cuentas", "*.database")
+        );
+
+        // Mostrar el explorador de archivos
+        File archivoSeleccionado = fileChooser.showOpenDialog(new Stage() );
+            
+        if (archivoSeleccionado != null) {
+            System.out.println("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath());
+        } else {
+            System.out.println("No se seleccionó ningún archivo.");
+        }
+    }*/
+
+    @FXML
+    private void menuItemCloseOnAction(ActionEvent event){
+        System.exit(0);
     }
 }

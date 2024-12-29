@@ -29,7 +29,7 @@ public class HibernateUtil {
             // Configuración de propiedades
             Properties settings = new Properties();
             settings.put(Environment.DRIVER, "org.sqlite.JDBC");
-            settings.put(Environment.URL, "jdbc:sqlite:database.db");
+            settings.put(Environment.URL, "jdbc:sqlite:database.accounts");
             settings.put(Environment.DIALECT, "org.hibernate.community.dialect.SQLiteDialect");
             settings.put(Environment.SHOW_SQL, "true");
             settings.put(Environment.FORMAT_SQL, "true");

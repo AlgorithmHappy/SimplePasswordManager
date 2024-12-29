@@ -2,11 +2,9 @@ package com.mycompany.passwordmanager.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.mycompany.passwordmanager.data_base.HibernateUtil;
@@ -71,8 +69,22 @@ public class CrudServiceImplements implements CrudServiceInterface{
 
     @Override
     public void deletetAccount(AccountDto account) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deletetAccount'");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+
+            Accounts entityAccount = account.getEntityAcount();
+
+            session.delete(entityAccount);
+
+            transaction.commit();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

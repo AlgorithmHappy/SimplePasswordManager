@@ -32,3 +32,4 @@ target/
 .netbeans/
 .vscode/
 *.db
+*.accounts
