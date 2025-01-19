@@ -4,6 +4,7 @@
  */
 package com.mycompany.passwordmanager.controllers;
 
+import com.mycompany.passwordmanager.data_base.HibernateUtil;
 import com.mycompany.passwordmanager.dto.AccountDto;
 import com.mycompany.passwordmanager.services.CrudServiceImplements;
 import com.mycompany.passwordmanager.services.CrudServiceInterface;
@@ -11,8 +12,11 @@ import com.mycompany.passwordmanager.utils.constants.Constants;
 import com.mycompany.passwordmanager.vo.TableAccountVo;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -71,6 +75,9 @@ public class MainWindowController implements Initializable {
     private Menu menu;
 
     @FXML
+    private MenuItem menuItemSaveAs;
+
+    @FXML
     private MenuItem menuItemOpen;
 
     @FXML
@@ -122,9 +129,12 @@ public class MainWindowController implements Initializable {
 
     private CrudServiceInterface crudService;
 
+    private String password;
+
     public MainWindowController() {
         crudService = new CrudServiceImplements();
-        this.listAccountDto = crudService.getAllAccounts();
+        password = "password";
+        this.listAccountDto = crudService.getAllAccounts(password);
         if(this.listAccountDto == null)
             this.listAccountDto = new ArrayList<>();
     }
@@ -164,10 +174,12 @@ public class MainWindowController implements Initializable {
 
         menuBar = new MenuBar();
         menu = new Menu("Archivo");
-        menuItemClose = new MenuItem("Cerrar");
         menuItemOpen = new MenuItem("Abrir");
-        menu.getItems().add(menuItemClose);
+        menuItemSaveAs = new MenuItem("Guardar como");
+        menuItemClose = new MenuItem("Cerrar");
         menu.getItems().add(menuItemOpen);
+        menu.getItems().add(menuItemSaveAs);
+        menu.getItems().add(menuItemClose);
         menuBar.getMenus().add(menu);
         // Establecer el MenuBar en la parte superior del AnchorPane
         AnchorPane.setTopAnchor(menuBar, 0.0);
@@ -187,14 +199,48 @@ public class MainWindowController implements Initializable {
             File archivoSeleccionado = fileChooser.showOpenDialog(new Stage() );
                 
             if (archivoSeleccionado != null) {
-                System.out.println("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath());
+                HibernateUtil.shutdown("password");
+                HibernateUtil.updateFilePropertiesAndSaveEncryptDatabase(archivoSeleccionado.getAbsolutePath(), password );
+                obsListAccounts.clear();
+                obsListTblAccountsVoFiltered.clear();
+                listAccountDto = crudService.getAllAccounts(password);
+                for(AccountDto it : listAccountDto){
+                    System.out.println(it.getAccount() );
+                    obsListAccounts.add(it.getTableAccountVo() );
+                }
+                tblViewAccounts.setItems(obsListAccounts);
+                tblViewAccounts.refresh();
             } else {
                 System.out.println("No se seleccionó ningún archivo.");
             }
         });
+        menuItemSaveAs.setOnAction(event -> extracted());
         menuItemClose.setOnAction(event -> {
+            HibernateUtil.shutdown("password");
             System.exit(0);
         });
+    }
+        
+  
+    private void extracted() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar cuentas");
+        
+        // Configurar filtros de extensiones
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Cuentas", "*.accounts")
+        );
+        
+        // Mostrar el explorador de archivos
+        File archivoSeleccionado = fileChooser.showSaveDialog(new Stage() );
+                    
+        if (archivoSeleccionado != null) {
+            try{
+                HibernateUtil.updateFilePropertiesAndSaveEncryptDatabase(archivoSeleccionado.getAbsolutePath(), "password");
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
     
     @FXML
@@ -230,7 +276,7 @@ public class MainWindowController implements Initializable {
         if(dialogWindowInsertController.getAccountDto().getId() != 0){
             obsListAccounts.add(dialogWindowInsertController.getTableAccountVo() );
             listAccountDto.add(dialogWindowInsertController.getAccountDto() );
-            crudService.insertAccount(dialogWindowInsertController.getAccountDto() );
+            crudService.insertAccount(dialogWindowInsertController.getAccountDto(), password );
         }
         tblViewAccounts.refresh();
         
@@ -292,7 +338,7 @@ public class MainWindowController implements Initializable {
                 }
             });
 
-            crudService.updateAccount(dialogWindowUpdateController.getAccountDto() );
+            crudService.updateAccount(dialogWindowUpdateController.getAccountDto(), password );
         }
         
         if(obsListTblAccountsVoFiltered != null && !obsListTblAccountsVoFiltered.isEmpty() ){
@@ -319,7 +365,7 @@ public class MainWindowController implements Initializable {
                 if(obsListTblAccountsVoFiltered != null && obsListTblAccountsVoFiltered.isEmpty() ){
                     tblViewAccounts.setPlaceholder(new Label("No se encuentra ninguna cuenta con el criterio de busqueda"));
                 }
-                crudService.deletetAccount(selectedAccount);
+                crudService.deletetAccount(selectedAccount, password);
             }
         }
         tblViewAccounts.refresh();
@@ -376,6 +422,7 @@ public class MainWindowController implements Initializable {
 
     @FXML
     private void menuItemCloseOnAction(ActionEvent event){
+        HibernateUtil.shutdown("password");
         System.exit(0);
     }
 }

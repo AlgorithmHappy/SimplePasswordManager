@@ -16,8 +16,8 @@ import jakarta.persistence.Query;
 public class CrudServiceImplements implements CrudServiceInterface{
 
     @Override
-    public void insertAccount(AccountDto account) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+    public void insertAccount(AccountDto account, String password) {
+        Session session = HibernateUtil.getSessionFactory(password).openSession();
 
         Transaction transaction = null;
 
@@ -37,8 +37,8 @@ public class CrudServiceImplements implements CrudServiceInterface{
     }
 
     @Override
-    public void updateAccount(AccountDto account) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+    public void updateAccount(AccountDto account, String password) {
+        Session session = HibernateUtil.getSessionFactory(password).openSession();
 
         Transaction transaction = null;
 
@@ -68,8 +68,8 @@ public class CrudServiceImplements implements CrudServiceInterface{
     }
 
     @Override
-    public void deletetAccount(AccountDto account) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+    public void deletetAccount(AccountDto account, String password) {
+        Session session = HibernateUtil.getSessionFactory(password).openSession();
         Transaction transaction = null;
 
         try {
@@ -88,8 +88,8 @@ public class CrudServiceImplements implements CrudServiceInterface{
     }
 
     @Override
-    public List<AccountDto> getAllAccounts() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+    public List<AccountDto> getAllAccounts(String password) {
+        Session session = HibernateUtil.getSessionFactory(password).openSession();
         List<AccountDto> lstAccountDtos = new ArrayList<>();
         try {
 
