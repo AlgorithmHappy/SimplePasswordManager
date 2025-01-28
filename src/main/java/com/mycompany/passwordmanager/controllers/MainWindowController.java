@@ -4,10 +4,14 @@
  */
 package com.mycompany.passwordmanager.controllers;
 
-import com.mycompany.passwordmanager.data_base.HibernateUtil;
+//import com.mycompany.passwordmanager.data_base.HibernateUtil;
 import com.mycompany.passwordmanager.dto.AccountDto;
 import com.mycompany.passwordmanager.services.CrudServiceImplements;
 import com.mycompany.passwordmanager.services.CrudServiceInterface;
+import com.mycompany.passwordmanager.services.DataBaseFilesManagerServiceImplements;
+import com.mycompany.passwordmanager.services.DataBaseFilesManagerServiceInterface;
+import com.mycompany.passwordmanager.services.PropertiesServiceImplements;
+import com.mycompany.passwordmanager.services.PropertiesServiceInterface;
 import com.mycompany.passwordmanager.utils.constants.Constants;
 import com.mycompany.passwordmanager.vo.TableAccountVo;
 
@@ -129,14 +133,28 @@ public class MainWindowController implements Initializable {
 
     private CrudServiceInterface crudService;
 
+    private PropertiesServiceInterface propertiesService;
+
+    private DataBaseFilesManagerServiceInterface dataBaseFilesManager;
+
     private String password;
 
     public MainWindowController() {
-        crudService = new CrudServiceImplements();
         password = "password";
-        this.listAccountDto = crudService.getAllAccounts(password);
-        if(this.listAccountDto == null)
+        crudService = new CrudServiceImplements(password);
+        propertiesService = new PropertiesServiceImplements(password);
+        if(propertiesService.isPersonalDatabaseEmpty() ){
             this.listAccountDto = new ArrayList<>();
+        } else {
+            dataBaseFilesManager = new DataBaseFilesManagerServiceImplements(
+                password,
+                propertiesService.getTemporalDatabasePath(),
+                propertiesService.getPersonalDatabasePath()
+            );
+            dataBaseFilesManager.closeDatabaseFile();
+            dataBaseFilesManager.temporarilyDecryptDataBase();
+            this.listAccountDto = crudService.getAllAccounts();
+        }
     }
     
     @Override
@@ -199,11 +217,11 @@ public class MainWindowController implements Initializable {
             File archivoSeleccionado = fileChooser.showOpenDialog(new Stage() );
                 
             if (archivoSeleccionado != null) {
-                HibernateUtil.shutdown("password");
-                HibernateUtil.updateFilePropertiesAndSaveEncryptDatabase(archivoSeleccionado.getAbsolutePath(), password );
+                //HibernateUtil.shutdown("password");
+                //HibernateUtil.updateFilePropertiesAndSaveEncryptDatabase(archivoSeleccionado.getAbsolutePath(), password );
                 obsListAccounts.clear();
                 obsListTblAccountsVoFiltered.clear();
-                listAccountDto = crudService.getAllAccounts(password);
+                listAccountDto = crudService.getAllAccounts();
                 for(AccountDto it : listAccountDto){
                     System.out.println(it.getAccount() );
                     obsListAccounts.add(it.getTableAccountVo() );
@@ -216,7 +234,7 @@ public class MainWindowController implements Initializable {
         });
         menuItemSaveAs.setOnAction(event -> extracted());
         menuItemClose.setOnAction(event -> {
-            HibernateUtil.shutdown("password");
+            //HibernateUtil.shutdown("password");
             System.exit(0);
         });
     }
@@ -236,7 +254,16 @@ public class MainWindowController implements Initializable {
                     
         if (archivoSeleccionado != null) {
             try{
-                HibernateUtil.updateFilePropertiesAndSaveEncryptDatabase(archivoSeleccionado.getAbsolutePath(), "password");
+                propertiesService.setPersonalDatabasePath(archivoSeleccionado.getAbsolutePath() );
+                if(dataBaseFilesManager == null){
+                    dataBaseFilesManager = new DataBaseFilesManagerServiceImplements(
+                        password,
+                        propertiesService.getTemporalDatabasePath(),
+                        propertiesService.getPersonalDatabasePath()
+                    );
+                }
+                dataBaseFilesManager.saveEncryptedDataBase();
+                //HibernateUtil.updateFilePropertiesAndSaveEncryptDatabase(archivoSeleccionado.getAbsolutePath(), "password");
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -276,7 +303,7 @@ public class MainWindowController implements Initializable {
         if(dialogWindowInsertController.getAccountDto().getId() != 0){
             obsListAccounts.add(dialogWindowInsertController.getTableAccountVo() );
             listAccountDto.add(dialogWindowInsertController.getAccountDto() );
-            crudService.insertAccount(dialogWindowInsertController.getAccountDto(), password );
+            crudService.insertAccount(dialogWindowInsertController.getAccountDto() );
         }
         tblViewAccounts.refresh();
         
@@ -338,7 +365,7 @@ public class MainWindowController implements Initializable {
                 }
             });
 
-            crudService.updateAccount(dialogWindowUpdateController.getAccountDto(), password );
+            crudService.updateAccount(dialogWindowUpdateController.getAccountDto() );
         }
         
         if(obsListTblAccountsVoFiltered != null && !obsListTblAccountsVoFiltered.isEmpty() ){
@@ -365,7 +392,7 @@ public class MainWindowController implements Initializable {
                 if(obsListTblAccountsVoFiltered != null && obsListTblAccountsVoFiltered.isEmpty() ){
                     tblViewAccounts.setPlaceholder(new Label("No se encuentra ninguna cuenta con el criterio de busqueda"));
                 }
-                crudService.deletetAccount(selectedAccount, password);
+                crudService.deletetAccount(selectedAccount);
             }
         }
         tblViewAccounts.refresh();
@@ -422,7 +449,7 @@ public class MainWindowController implements Initializable {
 
     @FXML
     private void menuItemCloseOnAction(ActionEvent event){
-        HibernateUtil.shutdown("password");
+        //HibernateUtil.shutdown("password");
         System.exit(0);
     }
 }

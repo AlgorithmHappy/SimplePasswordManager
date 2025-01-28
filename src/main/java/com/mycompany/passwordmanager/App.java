@@ -1,6 +1,6 @@
 package com.mycompany.passwordmanager;
 
-import com.mycompany.passwordmanager.data_base.HibernateUtil;
+import com.mycompany.passwordmanager.utils.GeneralMethods;
 import com.mycompany.passwordmanager.utils.constants.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -18,14 +18,19 @@ public class App extends Application {
 
     private static Scene scene;
 
+    //private static GeneralMethods generalMethods;
+
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML(Constants.MAIN_WINDOW));
-        stage.setScene(scene);
 
+        stage.setScene(scene);
         stage.setOnCloseRequest((WindowEvent event) -> {
             // Llama al método de cierre de HibernateUtil
-            HibernateUtil.shutdown("password"); // Reemplaza "your-password" con la contraseña real
+            //HibernateUtil.shutdown("password"); // Reemplaza "your-password" con la contraseña real
+            GeneralMethods generalMethods = GeneralMethods.getInstance("password");
+            generalMethods.getConexion().close();
+            generalMethods.deleteDatabaseTemporalFile();
             System.exit(0);
         });
 
@@ -42,6 +47,7 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        //generalMethods = GeneralMethods.getInstance("password");
         launch();
     }
 

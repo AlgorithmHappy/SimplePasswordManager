@@ -6,11 +6,11 @@ import com.mycompany.passwordmanager.dto.AccountDto;
 
 public interface CrudServiceInterface {
 
-    public void insertAccount(AccountDto account, String password);
+    public void insertAccount(AccountDto account);
 
-    public void updateAccount(AccountDto account, String password);
+    public void updateAccount(AccountDto account);
 
-    public void deletetAccount(AccountDto account, String password);
+    public void deletetAccount(AccountDto account);
 
-    public List<AccountDto> getAllAccounts(String password);
+    public List<AccountDto> getAllAccounts();
 }

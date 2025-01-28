@@ -4,108 +4,84 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-import com.mycompany.passwordmanager.data_base.HibernateUtil;
 import com.mycompany.passwordmanager.dto.AccountDto;
 import com.mycompany.passwordmanager.entities.Accounts;
+import com.mycompany.passwordmanager.utils.GeneralMethods;
+import com.mycompany.passwordmanager.utils.constants.Constants;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+/*
+ * Clase que realiza las operaciones CRUD en la base de datos
+ */
 public class CrudServiceImplements implements CrudServiceInterface{
 
-    @Override
-    public void insertAccount(AccountDto account, String password) {
-        Session session = HibernateUtil.getSessionFactory(password).openSession();
+    // Clase que contiene metodos generales, entre ellas la conexion a la base de datos
+    private GeneralMethods generalMethods;
 
-        Transaction transaction = null;
+    // Repositorio de la base de datos de SQLite
+    private EntityManager entityManager;
 
-        try {
-            transaction = session.beginTransaction();
-
-            Accounts entityAccount = account.copy().getEntityAcount();
-
-            session.persist(entityAccount);
-
-            transaction.commit();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    /*
+     * Constructor que inicializa la clase GeneralMethods, si o si se le tiene que pasar el password de la base de datos
+     * @param password Contraseña para encriptar y desencriptar las bases de datos sqlite
+     */
+    public CrudServiceImplements(String password) {
+        generalMethods = GeneralMethods.getInstance(password);
+        entityManager = generalMethods.getConexion().getEntityManager();
     }
 
+    /*
+     * Metodo que inserta una cuenta en la base de datos
+     * @param account Cuenta a insertar
+     */
     @Override
-    public void updateAccount(AccountDto account, String password) {
-        Session session = HibernateUtil.getSessionFactory(password).openSession();
-
-        Transaction transaction = null;
-
-        try {
-            transaction = session.beginTransaction();
-
-            Accounts entityAccount = session.get(Accounts.class, account.getId());
-            if (entityAccount != null) {
-                entityAccount.setAccount(account.getAccount() );
-                entityAccount.setComments(account.getComments() );
-                entityAccount.setEmail(account.getEmail() );
-                entityAccount.setPassword(account.getPassword() );
-                entityAccount.setPhone(account.getPhone() );
-                entityAccount.setToken(account.getToken() );
-                entityAccount.setUrl(account.getUrl() );
-                entityAccount.setUser_name(account.getUserName() );
-            }
-
-            session.merge(entityAccount);
-
-            transaction.commit();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void insertAccount(AccountDto account) {
+        entityManager.getTransaction().begin();
+        entityManager.persist(account.getEntityAcount());
+        entityManager.getTransaction().commit();
     }
 
+    /*
+     * Metodo que actualiza una cuenta en la base de datos
+     * @param account Cuenta a actualizar
+     */
     @Override
-    public void deletetAccount(AccountDto account, String password) {
-        Session session = HibernateUtil.getSessionFactory(password).openSession();
-        Transaction transaction = null;
-
-        try {
-            transaction = session.beginTransaction();
-
-            Accounts entityAccount = account.getEntityAcount();
-
-            session.delete(entityAccount);
-
-            transaction.commit();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void updateAccount(AccountDto account) {
+        entityManager.getTransaction().begin();
+        entityManager.merge(account.getEntityAcount());
+        entityManager.getTransaction().commit();
     }
 
+    /*
+     * Metodo que elimina una cuenta en la base de datos
+     * @param account Cuenta a eliminar
+     */
     @Override
-    public List<AccountDto> getAllAccounts(String password) {
-        Session session = HibernateUtil.getSessionFactory(password).openSession();
+    public void deletetAccount(AccountDto account) {
+        entityManager.getTransaction().begin();
+        entityManager.remove(account.getEntityAcount());
+        entityManager.getTransaction().commit();
+    }
+
+    /*
+     * Metodo que devuelve todas las cuentas de la base de datos
+     * @return Lista de todas las cuentas
+     */
+    @Override
+    public List<AccountDto> getAllAccounts() {
+        entityManager.getTransaction().begin();
+        Query query = entityManager.createQuery(Constants.DATA_BASE_QUERY_ALL_ACCOUNTS);
         List<AccountDto> lstAccountDtos = new ArrayList<>();
-        try {
-
-            Query query = session.createQuery("FROM Accounts");
-            List<Accounts> lstAccounts = query.getResultList();
-
-            if(lstAccounts != null && !lstAccounts.isEmpty() ){
-                lstAccountDtos = lstAccounts.stream()
-                    .map(it -> new AccountDto(it) )
-                    .collect(Collectors.toList() );
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        List<Accounts> lstAccounts = query.getResultList();
+        if(lstAccounts != null && !lstAccounts.isEmpty() ){
+            lstAccountDtos = lstAccounts
+                .stream()
+                .map(it -> new AccountDto(it) )
+                .collect(Collectors.toList() );
         }
-        
+        entityManager.getTransaction().commit();
         return lstAccountDtos;
     }
 

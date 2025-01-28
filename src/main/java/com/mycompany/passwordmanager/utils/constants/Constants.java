@@ -30,4 +30,24 @@ public class Constants {
     public static final String REGEX_EMAIL = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     // Si esta expresion es cierta el string solo contiene numeros
     public static final String REGEX_NUMERIC = "^\\d+$";
+
+    public static final String PATH_PROPERTIES = "/src/main/resources/com/mycompany/passwordmanager/config.properties";
+    public static final String PATH_USER = "user.dir";
+
+    public static final String DATA_BASE_PERSONAL_URL = "personal_url";
+    public static final String DATA_BASE_TEMPORAL_URL = "temporal_url";
+    public static final String DATA_BASE_DYNAMIC_PERSISTENCE = "dynamic-persistence-unit";
+    public static final String DATA_BASE_QUERY_ALL_ACCOUNTS = "FROM Accounts";
+    public static final String PROPERTY_URL_HIBERNATE = "hibernate.connection.url";
+    public static final String PROPERTY_URL_HIBERNATE_PERSONAL = "hibernate.connection.url.personal";
+    public static final String PROPERTY_URL_HIBERNATE_TEMPORAL = "hibernate.connection.url.temporal";
+    public static final String ENCRIPT_SALT = "12345678";
+    public static final String ENCRIPT_HASH_METHOD = "PBKDF2WithHmacSHA256";
+    public static final Integer ENCRIPT_ITERATIONS = 65536;
+    public static final Integer ENCRIPT_KEY_LENGTH = 256;
+    public static final String ENCRIPT_ENCODE = "AES";
+    public static final String USER_DIRECTORY = "user.dir";
+    public static final String CONFIG_PATH = "/src/main/resources/com/mycompany/passwordmanager/config.properties";
+    public static final String BACK_SLASH ="\\";
+    public static final String SLASH = "/";
 }
