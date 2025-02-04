@@ -3,6 +3,10 @@ package com.mycompany.passwordmanager.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -103,9 +107,12 @@ public class EncryptAndDecrypt {
      */
     public void delateTemporalDatabase(String pathTemporalDatabase){
         // Ruta del archivo a eliminar
-        File archivo = new File(pathTemporalDatabase);
-        if(archivo != null){
-            archivo.delete();
+        Path path = Paths.get(pathTemporalDatabase);
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        System.out.println(pathTemporalDatabase);
     }
 }

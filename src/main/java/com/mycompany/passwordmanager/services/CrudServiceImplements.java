@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import com.mycompany.passwordmanager.dto.AccountDto;
 import com.mycompany.passwordmanager.entities.Accounts;
 import com.mycompany.passwordmanager.utils.GeneralMethods;
 import com.mycompany.passwordmanager.utils.constants.Constants;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 
 /*
@@ -21,7 +25,7 @@ public class CrudServiceImplements implements CrudServiceInterface{
     private GeneralMethods generalMethods;
 
     // Repositorio de la base de datos de SQLite
-    private EntityManager entityManager;
+    //private EntityManager entityManager;
 
     /*
      * Constructor que inicializa la clase GeneralMethods, si o si se le tiene que pasar el password de la base de datos
@@ -29,7 +33,7 @@ public class CrudServiceImplements implements CrudServiceInterface{
      */
     public CrudServiceImplements(String password) {
         generalMethods = GeneralMethods.getInstance(password);
-        entityManager = generalMethods.getConexion().getEntityManager();
+        //entityManager = generalMethods.getConexion().getEntityManager();
     }
 
     /*
@@ -38,9 +42,13 @@ public class CrudServiceImplements implements CrudServiceInterface{
      */
     @Override
     public void insertAccount(AccountDto account) {
-        entityManager.getTransaction().begin();
-        entityManager.persist(account.getEntityAcount());
-        entityManager.getTransaction().commit();
+        SessionFactory sessionFactory = generalMethods.getPropertiesManager().getDataBaseConfiguration().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.persist(account.getEntityAcount());
+        session.getTransaction().commit();
+        session.close();
+        sessionFactory.close();
     }
 
     /*
@@ -49,9 +57,13 @@ public class CrudServiceImplements implements CrudServiceInterface{
      */
     @Override
     public void updateAccount(AccountDto account) {
-        entityManager.getTransaction().begin();
-        entityManager.merge(account.getEntityAcount());
-        entityManager.getTransaction().commit();
+        SessionFactory sessionFactory = generalMethods.getPropertiesManager().getDataBaseConfiguration().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.merge(account.getEntityAcount());
+        session.getTransaction().commit();
+        session.close();
+        sessionFactory.close();
     }
 
     /*
@@ -60,9 +72,13 @@ public class CrudServiceImplements implements CrudServiceInterface{
      */
     @Override
     public void deletetAccount(AccountDto account) {
-        entityManager.getTransaction().begin();
-        entityManager.remove(account.getEntityAcount());
-        entityManager.getTransaction().commit();
+        SessionFactory sessionFactory = generalMethods.getPropertiesManager().getDataBaseConfiguration().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.remove(account.getEntityAcount());
+        session.getTransaction().commit();
+        session.close();
+        sessionFactory.close();
     }
 
     /*
@@ -71,8 +87,10 @@ public class CrudServiceImplements implements CrudServiceInterface{
      */
     @Override
     public List<AccountDto> getAllAccounts() {
-        entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery(Constants.DATA_BASE_QUERY_ALL_ACCOUNTS);
+        SessionFactory sessionFactory = generalMethods.getPropertiesManager().getDataBaseConfiguration().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Query query = session. createQuery(Constants.DATA_BASE_QUERY_ALL_ACCOUNTS);
         List<AccountDto> lstAccountDtos = new ArrayList<>();
         List<Accounts> lstAccounts = query.getResultList();
         if(lstAccounts != null && !lstAccounts.isEmpty() ){
@@ -81,7 +99,9 @@ public class CrudServiceImplements implements CrudServiceInterface{
                 .map(it -> new AccountDto(it) )
                 .collect(Collectors.toList() );
         }
-        entityManager.getTransaction().commit();
+        session.getTransaction().commit();
+        session.close();
+        sessionFactory.close();
         return lstAccountDtos;
     }
 

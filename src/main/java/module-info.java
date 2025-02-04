@@ -3,6 +3,7 @@ module com.mycompany.passwordmanager {
     requires javafx.fxml;
     requires org.hibernate.orm.core;
     requires jakarta.persistence;
+    requires javafx.graphics;
 
     opens com.mycompany.passwordmanager to javafx.fxml;
     exports com.mycompany.passwordmanager;

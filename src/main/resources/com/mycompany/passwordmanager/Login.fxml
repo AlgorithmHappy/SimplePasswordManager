@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.passwordmanager.controllers.LoginWindowController">
+   <children>
+      <HBox prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="400.0" prefWidth="300.0" spacing="60.0">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="133.0" prefWidth="300.0">
+                     <children>
+                        <Label text="Acceso">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="134.0" prefWidth="300.0" spacing="25.0">
+                     <children>
+                        <ComboBox fx:id="cmboBoxDirectories" editable="true" prefWidth="205.0" promptText="Ingrese el directorio del archivo">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></ComboBox>
+                        <TextField fx:id="txtFieldPassword" maxWidth="205.0" onKeyReleased="#txtFieldPasswordOnKeyReleased" prefWidth="205.0" promptText="Ingrese la contraseña maestra" style="-fx-alignment: center;">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></TextField>
+                        <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#btnLoginOnAction" prefWidth="205.0" text="Ingresar">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Button>
+                     </children>
+                  </VBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="133.0" prefWidth="300.0">
+                     <children>
+                        <Button fx:id="btnNew" mnemonicParsing="false" onAction="#btnNewOnAction" prefWidth="102.0" text="Nuevo">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Pane prefHeight="400.0" prefWidth="300.0">
+               <children>
+                  <ImageView fitHeight="375.0" fitWidth="299.0" layoutX="1.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Login.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+   </children>
+</Pane>

@@ -11,7 +11,9 @@ package com.mycompany.passwordmanager.utils.constants;
 public class Constants {
     
     // Ventanas fxml's
-    public static final String MAIN_WINDOW = "MainWindow";
+    public static final String MAIN_WINDOW = "/com/mycompany/passwordmanager/MainWindow.fxml";
+    public static final String LOGIN_WINDOW = "Login.fxml";
+    public static final String TITLE_WINDOW_LOGIN = "Ingresar";
     public static final String DIALOG_INSERT_WINDOW = "/com/mycompany/passwordmanager/DialogInsertWindow.fxml";
     public static final String DIALOG_UPDATE_WINDOW = "/com/mycompany/passwordmanager/DialogUpdateWindow.fxml";
     
@@ -39,7 +41,7 @@ public class Constants {
     public static final String DATA_BASE_DYNAMIC_PERSISTENCE = "dynamic-persistence-unit";
     public static final String DATA_BASE_QUERY_ALL_ACCOUNTS = "FROM Accounts";
     public static final String PROPERTY_URL_HIBERNATE = "hibernate.connection.url";
-    public static final String PROPERTY_URL_HIBERNATE_PERSONAL = "hibernate.connection.url.personal";
+    public static final String PROPERTY_URL_HIBERNATE_PERSONAL = "hibernate.connection.url.personal.";
     public static final String PROPERTY_URL_HIBERNATE_TEMPORAL = "hibernate.connection.url.temporal";
     public static final String ENCRIPT_SALT = "12345678";
     public static final String ENCRIPT_HASH_METHOD = "PBKDF2WithHmacSHA256";
@@ -50,4 +52,10 @@ public class Constants {
     public static final String CONFIG_PATH = "/src/main/resources/com/mycompany/passwordmanager/config.properties";
     public static final String BACK_SLASH ="\\";
     public static final String SLASH = "/";
+
+    public static final Integer CERO = 0;
+    public static final Integer ONE = 1;
+
+    public static final String GLOBAL_ABRIR = "Abrir...";
+    public static final String GLOBAL_POINT = "•";
 }

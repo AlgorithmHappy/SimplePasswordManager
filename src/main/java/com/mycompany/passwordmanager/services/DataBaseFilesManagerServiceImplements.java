@@ -51,6 +51,6 @@ public class DataBaseFilesManagerServiceImplements implements DataBaseFilesManag
     */
     @Override
     public void closeDatabaseFile() {
-        generalMethods.getConexion().close();
+        //generalMethods.getConexion().close();
     }
 }

@@ -19,9 +19,6 @@ public class PropertiesManager {
     // Archivo de propiedades
     private Properties properties;
 
-    // Configuracion de la base de datos
-    private Configuration dataBaseConfiguration;
-
     /*
      * Constructor que crea el objeto que carga el archivo de propiedades y el de configuraciones para la base de datos
      */
@@ -39,9 +36,6 @@ public class PropertiesManager {
             e.printStackTrace();
         }
 
-        dataBaseConfiguration = new Configuration();
-        dataBaseConfiguration.setProperties(properties);
-        dataBaseConfiguration.addAnnotatedClass(Accounts.class);
     }
 
     /*
@@ -55,6 +49,9 @@ public class PropertiesManager {
      * Getter que devuelve la configuracion de la base de datos
      */
     public Configuration getDataBaseConfiguration(){
+        Configuration dataBaseConfiguration = new Configuration();
+        dataBaseConfiguration.setProperties(properties);
+        dataBaseConfiguration.addAnnotatedClass(Accounts.class);
         return dataBaseConfiguration;
     }
 

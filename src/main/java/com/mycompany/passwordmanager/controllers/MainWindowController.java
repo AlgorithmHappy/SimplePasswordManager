@@ -140,7 +140,7 @@ public class MainWindowController implements Initializable {
     private String password;
 
     public MainWindowController() {
-        password = "password";
+        password = "1234567890123456";
         crudService = new CrudServiceImplements(password);
         propertiesService = new PropertiesServiceImplements(password);
         if(propertiesService.isPersonalDatabaseEmpty() ){
@@ -151,9 +151,8 @@ public class MainWindowController implements Initializable {
                 propertiesService.getTemporalDatabasePath(),
                 propertiesService.getPersonalDatabasePath()
             );
-            dataBaseFilesManager.closeDatabaseFile();
-            dataBaseFilesManager.temporarilyDecryptDataBase();
-            this.listAccountDto = crudService.getAllAccounts();
+            dataBaseFilesManager.temporarilyDecryptDataBase();// Aqui esta el error del principio, y
+            this.listAccountDto = new ArrayList<>();
         }
     }
     
@@ -161,6 +160,7 @@ public class MainWindowController implements Initializable {
     public void initialize(URL arg0, ResourceBundle arg1) {
         obsListAccounts = FXCollections.observableArrayList();
         obsListTblAccountsVoFiltered = FXCollections.observableArrayList();
+        this.listAccountDto = crudService.getAllAccounts();
         for(AccountDto it : this.listAccountDto)
             obsListAccounts.add(it.getTableAccountVo() );
         
@@ -246,7 +246,7 @@ public class MainWindowController implements Initializable {
         
         // Configurar filtros de extensiones
         fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Cuentas", "*.accounts")
+            new FileChooser.ExtensionFilter("Cuentas", "*.db")
         );
         
         // Mostrar el explorador de archivos

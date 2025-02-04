@@ -15,16 +15,24 @@ public class GeneralMethods {
     // Clase que encripta y desencripta los archivos
     private EncryptAndDecrypt encryptAndDecrypt;
     // Clase que gestiona la conexion a la base de datos
-    private Conexion conexion;
+    //private Conexion conexion;
 
     /*
      * Constructor vacio y privado porque solo habra una instancia de este metodo
      * @param password Contraseña para encriptar y desencriptar
      */
     private GeneralMethods(String password) { 
-        propertiesManager = new PropertiesManager();
+        if(propertiesManager == null)
+            propertiesManager = new PropertiesManager();
         encryptAndDecrypt = new EncryptAndDecrypt(password);
-        conexion = new Conexion(propertiesManager);
+        //conexion = new Conexion(propertiesManager);
+    }
+
+    /*
+     * Constructor que inicializa las propiedades sin tener que desencriptar la base de datos para que no pida como argumento el password
+     */
+    private GeneralMethods(){
+        propertiesManager = new PropertiesManager();
     }
 
     /*
@@ -34,6 +42,17 @@ public class GeneralMethods {
     public static GeneralMethods getInstance(String password) {
         if (instance == null) {
             instance = new GeneralMethods(password);
+        } 
+        return instance;
+    }
+
+    /*
+     * Metodo que devuelve la instancia de la clase (sin password para que inicialice solo las propiedades)
+     * @param password Contraseña para encriptar y desencriptar
+     */
+    public static GeneralMethods getInstance() {
+        if (instance == null) {
+            instance = new GeneralMethods();
         }
         return instance;
     }
@@ -58,11 +77,32 @@ public class GeneralMethods {
      * Metodo getter que devuelve la clase que gestiona la conexion a la base de datos
      * @return conexion Clase que gestiona la conexion a la base de datos
      */
-    public Conexion getConexion() {
+    /*public Conexion getConexion() {
+        if(conexion == null){
+            conexion = new Conexion(propertiesManager);
+        }
         return conexion;
-    }
+    }*/
 
     public void deleteDatabaseTemporalFile(){
-        encryptAndDecrypt.delateTemporalDatabase(propertiesManager.getProperties().getProperty(Constants.PROPERTY_URL_HIBERNATE_TEMPORAL));
+        String rootPath = System
+            .getProperty(Constants.USER_DIRECTORY)
+            .replace(Constants.BACK_SLASH, Constants.SLASH)
+            .concat(Constants.SLASH);
+        encryptAndDecrypt.delateTemporalDatabase(rootPath + propertiesManager.getProperties().getProperty(Constants.PROPERTY_URL_HIBERNATE_TEMPORAL));
     }
+
+    /*
+     * Elimina el objeto Conexion
+     */
+    /*public void closeConexion(){
+        conexion.close();
+    }*/
+
+    /*
+     * Vuelve a abrir la conexion
+     */
+    /*public void openConexion(){
+        conexion.open();
+    }*/
 }

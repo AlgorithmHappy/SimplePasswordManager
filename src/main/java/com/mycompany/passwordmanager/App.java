@@ -22,18 +22,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML(Constants.MAIN_WINDOW));
+        scene = new Scene(loadFXML(Constants.LOGIN_WINDOW));
 
         stage.setScene(scene);
-        stage.setOnCloseRequest((WindowEvent event) -> {
-            // Llama al método de cierre de HibernateUtil
-            //HibernateUtil.shutdown("password"); // Reemplaza "your-password" con la contraseña real
-            GeneralMethods generalMethods = GeneralMethods.getInstance("password");
-            generalMethods.getConexion().close();
-            generalMethods.deleteDatabaseTemporalFile();
-            System.exit(0);
-        });
-
+        stage.setResizable(Boolean.FALSE);
+        stage.setTitle(Constants.TITLE_WINDOW_LOGIN);
         stage.show();
     }
 
@@ -42,12 +35,11 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml) );
         return fxmlLoader.load();
     }
 
     public static void main(String[] args) {
-        //generalMethods = GeneralMethods.getInstance("password");
         launch();
     }
 
